@@ -2,6 +2,7 @@ package Domineering;
 
 
 import java.util.Enumeration;
+import java.util.List;
 import java.util.Scanner;
 import java.util.Vector;
 
@@ -18,14 +19,17 @@ public abstract class GameSearch {
     public abstract float positionEvaluation(Position var1, boolean var2);
 
     public abstract void printPosition(Position var1);
+    public abstract Position getProgramMove(Position p);
 
     public abstract Position[] possiblePositions(Position var1, boolean var2);
+    public abstract void saveGame(Position position, boolean player1Turn, boolean player, int player1HelpCount, int player2HelpCount);
 
     public abstract Position makeMove(Position var1, boolean var2, Move var3);
 
     public abstract boolean reachedMaxDepth(Position var1, int var2);
 
     public abstract Move createMove();
+
 
 
     public Vector minValue(int depth, Position p, float alpha, float beta) {
@@ -98,6 +102,7 @@ public abstract class GameSearch {
         }
     }
     //////////////////////////////////////////////////////////
+
     public void playGame(Position startingPosition, boolean humanPlayFirst) {
         int humanHelpCount = 0;
 
@@ -117,11 +122,6 @@ public abstract class GameSearch {
                 System.out.println("Human won");
                 break;
             }
-
-//            if (this.drawnPosition(startingPosition)) {
-//                System.out.println("Drawn game");
-//                break;
-//            }
 
             System.out.println("Your move:");
 
@@ -144,14 +144,36 @@ public abstract class GameSearch {
                 else{
                     Move move = createMove();
                     startingPosition = this.makeMove(startingPosition, HUMAN, move);
+
+                    // Demander si le joueur veut sauvegarder la partie
+//                    System.out.println("Do you want to save the game? (yes/no)");
+//                    Scanner scanner1 = new Scanner(System.in);
+//                    String saveResponse = scanner1.next().toLowerCase();
+//
+//                    if (saveResponse.equals("yes")) {
+//                        saveGameP2AI(startingPosition, humanPlayFirst, humanHelpCount);
+//                        System.out.println("Game saved.");
+//                        break;  // Vous pouvez terminer le jeu ici ou continuer
+//                    }
                 }
             }
             else{
                 Move move = createMove();
                 startingPosition = this.makeMove(startingPosition, HUMAN, move);
+
+                // Demander si le joueur veut sauvegarder la partie
+//                System.out.println("Do you want to save the game? (yes/no)");
+//                Scanner scanner = new Scanner(System.in);
+//                String saveResponse = scanner.next().toLowerCase();
+//
+//                if (saveResponse.equals("yes")) {
+//                    saveGameP2AI(startingPosition, humanPlayFirst, humanHelpCount);
+//                    System.out.println("Game saved.");
+//                    break;  // Vous pouvez terminer le jeu ici ou continuer
+//                }
             }
 
-         //   this.printPosition(startingPosition);
+            //   this.printPosition(startingPosition);
             Vector v = this.maxValue(0, startingPosition, Float.MIN_VALUE, Float.MAX_VALUE);
             Enumeration enum2 = v.elements();
 
@@ -193,21 +215,23 @@ public abstract class GameSearch {
                         Vector v = minValue(0, startingPosition, Float.MIN_VALUE, Float.MAX_VALUE);
                         startingPosition = (Position) v.elementAt(1);
                         player1HelpCount++;
-                    }
-                    else{
+                    } else if (helpResponse.equals("save")) {
+                        saveGame(startingPosition, true, player1Turn, player1HelpCount, player2HelpCount);
+                        System.out.println("Game saved. Exiting.");
+                        return;  // Arrêter le jeu
+                    } else {
                         Move move = createMove();
                         startingPosition = makeMove(startingPosition, HUMAN, move);
                     }
-                } else{
+                } else {
                     Move move = createMove();
                     startingPosition = makeMove(startingPosition, HUMAN, move);
                 }
-
             } else {
                 System.out.println("Player 2's move:");
 
                 if (player2HelpCount < 2) {
-                    System.out.println("Do you want help from the program? (yes/no)");
+                    System.out.println("Do you want to save the game? (save) or Do you want help from the program? (yes/no)");
                     Scanner scanner = new Scanner(System.in);
                     String helpResponse = scanner.next().toLowerCase();
 
@@ -215,12 +239,15 @@ public abstract class GameSearch {
                         Vector v = maxValue(0, startingPosition, Float.MIN_VALUE, Float.MAX_VALUE);
                         startingPosition = (Position) v.elementAt(1);
                         player2HelpCount++;
-                    }
-                    else{
+                    } else if (helpResponse.equals("save")) {
+                        saveGame(startingPosition, false, player1Turn, player1HelpCount, player2HelpCount);
+                        System.out.println("Game saved. Exiting.");
+                        return;  // Arrêter le jeu
+                    } else {
                         Move move = createMove();
                         startingPosition = makeMove(startingPosition, PROGRAM, move);
                     }
-                } else{
+                } else {
                     Move move = createMove();
                     startingPosition = makeMove(startingPosition, HUMAN, move);
                 }
@@ -229,5 +256,7 @@ public abstract class GameSearch {
             player1Turn = !player1Turn;
         }
     }
+
+
 
 }

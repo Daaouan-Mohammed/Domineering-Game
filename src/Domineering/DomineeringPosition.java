@@ -9,7 +9,13 @@ public class DomineeringPosition extends Position {
     public int[][] board;
 
     public DomineeringPosition(int r, int c) {
+
         this.board = new int[r][c];
+        for(int i = 0; i < r; ++i) {
+            for(int j = 0; j < c; ++j) {
+                this.board[i][j] = EMPTY;
+            }
+        }
     }
 
     public DomineeringPosition(DomineeringPosition pos) {

@@ -5,7 +5,7 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
-public class DomineeringGrid extends JFrame implements ActionListener {
+public class DomineeringH2P extends JFrame implements ActionListener {
     boolean player =true;
     private JLabel status;
     private int gridSize;
@@ -14,8 +14,13 @@ public class DomineeringGrid extends JFrame implements ActionListener {
     JButton button;
     private DomineeringButton buttons[][];
     public int state = 0;
-    DomineeringGrid(int size){
+    private DomineeringPosition currentPosition;
+    private Domineering domineeringGame;
+    DomineeringH2P(int size){
+
         this.gridSize = size;
+        domineeringGame = new Domineering();
+        currentPosition = new DomineeringPosition(gridSize,gridSize);
         this.buttons = new DomineeringButton[gridSize][gridSize];
 //////////////Paneltop////////////////////////////////
         JPanel paneltop = new JPanel(new BorderLayout());
@@ -92,7 +97,7 @@ public class DomineeringGrid extends JFrame implements ActionListener {
         /////panelbuttombuttom///////
         panelbuttombuttom.setPreferredSize(new Dimension(250,200));
         panelbuttombuttom.setLayout(new GridLayout(5,2));
-        JLabel player2 = new JLabel("player2:");
+        JLabel player2 = new JLabel("Program:");
         JLabel player22 =new JLabel();
         JLabel maxmove2=new JLabel("Maximal Moves ");
         JLabel maxmove22=new JLabel();
@@ -100,7 +105,7 @@ public class DomineeringGrid extends JFrame implements ActionListener {
         JLabel possiblemove22=new JLabel();
         JLabel safemove2=new JLabel("Safe Moves ");
         JLabel safemove22=new JLabel();
-        JButton help22= new JButton("Ask for Help (2)");
+        JLabel help22=new JLabel();
         JLabel help2=new JLabel();
 
         panelbuttombuttom.add(player2);
@@ -133,13 +138,6 @@ public class DomineeringGrid extends JFrame implements ActionListener {
             }
         }
 
-//        for (int i = 0; i < gridSize; i++) {
-//            for (int j = 0; j < gridSize; j++) {
-//                button = new JButton(i + " " + j );
-//                button.addActionListener(this);
-//                gridPanel.add(button);
-//            }
-//        }
         status = new JLabel(player + "'s turn");
         panelleftbuttom.add(status);
         panelleftbuttom.add(gridPanel);
@@ -173,40 +171,40 @@ public class DomineeringGrid extends JFrame implements ActionListener {
         this.setVisible(true);
     }
 
-//    private void updateUI(Position newPosition) {
-//        if (newPosition instanceof DomineeringPosition) {
-//            DomineeringPosition domPosition = (DomineeringPosition) newPosition;
-//            int rows = domPosition.board[0].length;
-//            int columns = domPosition.board[1].length;
-//
-//            for (int i = 0; i < rows; ++i) {
-//                for (int j = 0; j < columns; ++j) {
-//                    int value = domPosition.board[i][j];
-//
-//                    // Set background color based on the value
-//                    if (value == 1) {
-//                        buttons[i][j].setBackground(Color.GREEN);  // Adjust color as needed
-//                    } else if (value == -1) {
-//                        buttons[i][j].setBackground(Color.RED);    // Adjust color as needed
-//                    } else {
-//                        buttons[i][j].setBackground(Color.WHITE);  // Adjust color as needed
-//                    }
-//                }
-//            }
-//        }
-//    }
-public boolean isValidMove(int row1, int col1, boolean player) {
-    int row2 = row1;
-    int col2 = col1;
+        private void updateUI(Position newPosition) {
+        if (newPosition instanceof DomineeringPosition) {
+            DomineeringPosition domPosition = (DomineeringPosition) newPosition;
+            int rows = domPosition.board[0].length;
+            int columns = domPosition.board[1].length;
 
-    if (!player) {
-        col2++;
-        return col2 < buttons[row2].length && buttons[row1][col1].getState() == 0 && buttons[row2][col2].getState() == 0;
-    } else {
-        row2++;
-        return row2 < buttons.length && buttons[row1][col1].getState() == 0 && buttons[row2][col2].getState() == 0;
+            for (int i = 0; i < rows; ++i) {
+                for (int j = 0; j < columns; ++j) {
+                    int value = domPosition.board[i][j];
+
+                    // Set background color based on the value
+                    if (value == 1) {
+                        buttons[i][j].setBackground(Color.GREEN);  // Adjust color as needed
+                    } else if (value == -1) {
+                        buttons[i][j].setBackground(Color.RED);    // Adjust color as needed
+                    } else {
+                        buttons[i][j].setBackground(Color.WHITE);  // Adjust color as needed
+                    }
+                }
+            }
+        }
     }
-}
+    public boolean isValidMove(int row1, int col1, boolean player) {
+        int row2 = row1;
+        int col2 = col1;
+
+        if (!player) {
+            col2++;
+            return col2 < currentPosition.board[row2].length && currentPosition.board[row1][col1] == 0 && currentPosition.board[row2][col2] == 0;
+        } else {
+            row2++;
+            return row2 < currentPosition.board.length && currentPosition.board[row1][col1] == 0 && currentPosition.board[row2][col2] == 0;
+        }
+    }
 
     @Override
     public void actionPerformed(ActionEvent e) {
@@ -221,50 +219,76 @@ public boolean isValidMove(int row1, int col1, boolean player) {
 
     }
 
+    private void closeCurrentWindowAndOpenNewOne() {
+        this.dispose(); // Close the current window
+        new DomineeringGUI(); // Open the new window (replace YourNewWindow with your actual class)
+    }
+    public class ButtonListener implements ActionListener {
+        @Override
+        public void actionPerformed(ActionEvent e) {
 
-public class ButtonListener implements ActionListener {
-    @Override
-    public void actionPerformed(ActionEvent e) {
+            int a;
+            int b;
+            DomineeringButton clicked = (DomineeringButton) e.getSource();
+            a = clicked.getRow();
+            b = clicked.getCol();
+            DomineeringMove move = new DomineeringMove(a, b);
+            if (player && !domineeringGame.wonPosition(currentPosition, true)){
+                if (isValidMove(a, b, true)) {
+                    currentPosition = (DomineeringPosition) domineeringGame.makeMove(currentPosition, true, move);
 
-        int a;
-        int b;
-        DomineeringButton clicked = (DomineeringButton) e.getSource();
-        a = clicked.getRow();
-        b = clicked.getCol();
-
-        if (!player && isValidMove(a, b, false) && !gameOver(false)) {
-            buttons[a][b].setBackground(Color.BLUE);
-            buttons[a][b + 1].setBackground(Color.BLUE);
-            buttons[a][b].setStateP();
-            buttons[a][b + 1].setStateP();
-            player = true;
-            if (gameOver(true)) {
-                status.setText("No more moves...\n" + "Player 2 wins!");
-            } else {
-                status.setText(player + "'s turn");
+                    updateUI(currentPosition);
+                    System.out.println(player);
+                    if (domineeringGame.wonPosition(currentPosition, true)) {
+                        status.setText("No more moves...\n" + "Program wins!");
+                    }
+                    player = false;
+                } else {
+                    status.setText("Invalid move!\n" + "Try again " + true);
+                }
             }
-        } else if (player && isValidMove(a, b, true) && !gameOver(true)) {
-            buttons[a][b].setBackground(Color.ORANGE);
-            buttons[a + 1][b].setBackground(Color.ORANGE);
-            buttons[a][b].setStateH();
-            buttons[a + 1][b].setStateH();
-            player = false;
-            if (gameOver(false)) {
-                status.setText("No more moves...\n" + "Player 1 wins!");
-            } else {
-                status.setText(player + "'s turn");
+            if(domineeringGame.wonPosition(currentPosition, true)){
+                JOptionPane.showMessageDialog(
+                        DomineeringH2P.this,
+                        "Human wins!",
+                        "Game Over",
+                        JOptionPane.INFORMATION_MESSAGE
+                );
+                closeCurrentWindowAndOpenNewOne();
+
             }
-        } else {
-            status.setText("Invalid move!\n" + "Try again " + player);
+
+             if (!player && !domineeringGame.wonPosition(currentPosition, false)) {
+                System.out.println(player);
+                System.out.println("ppppppp");
+                System.out.println(currentPosition.board[0][0]);
+                currentPosition = (DomineeringPosition) domineeringGame.getProgramMove(currentPosition);
+                updateUI(currentPosition);
+                if (domineeringGame.wonPosition(currentPosition, false) ){
+                    status.setText("No more moves...\n" + "Human wins!");
+                }
+                 player = true;
+            }
+             if(domineeringGame.wonPosition(currentPosition, false)){
+                 JOptionPane.showMessageDialog(
+                         DomineeringH2P.this,
+                         "Program wins!",
+                         "Game Over",
+                         JOptionPane.INFORMATION_MESSAGE
+                 );
+                 closeCurrentWindowAndOpenNewOne();
+             }
+
         }
     }
-}
+
     public boolean gameOver(boolean player) {
+
         int row = 0;
         boolean foundMove = false;
-        while (row < buttons.length && !foundMove) {
+        while (row < currentPosition.board.length && !foundMove) {
             int col = 0;
-            while (col < buttons[row].length & !foundMove) {
+            while (col < currentPosition.board[row].length & !foundMove) {
                 foundMove = isValidMove(row, col, player);
                 col++;
             }
@@ -273,3 +297,4 @@ public class ButtonListener implements ActionListener {
         return !foundMove;
     }
 }
+

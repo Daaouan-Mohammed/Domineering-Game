@@ -12,5 +12,7 @@ public class DomineeringMove extends Move {
         this.row = row;
         this.col = col;
     }
+
+
 }
 
