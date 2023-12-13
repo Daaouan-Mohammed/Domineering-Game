@@ -6,12 +6,18 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 public class DomineeringGUI extends JFrame implements ActionListener {
+
+    private DomineeringPosition currentPosition;
+    private Domineering domineeringGame;
     JComboBox<Integer> comboSize;
     JComboBox<String> comboplayer1;
     JComboBox<String> comboplayer2;
     JButton btnplay;
 
+    JButton btncnt;
     DomineeringGUI() {
+        domineeringGame = new Domineering();
+
         Integer[] size = {2, 3, 4, 5, 6, 7, 8};
         String[] player1 = {"Human"};
         String[] player2 = {"Human", "Program: Level1", "Program: Level2", "Program: Level3"};
@@ -33,6 +39,15 @@ public class DomineeringGUI extends JFrame implements ActionListener {
         btnplay.addActionListener(this);
         btnplay.setText("Play");
         btnplay.setFocusable(false);
+
+        btncnt = new JButton();
+        btncnt.setBackground(new Color(139, 69, 19)); // Set background color
+        btncnt.setForeground(Color.WHITE); // Set text color
+        btncnt.setFont(new Font("Arial", Font.BOLD, 16)); // Set font
+
+        btncnt.addActionListener(this);
+        btncnt.setText("Continue");
+        btncnt.setFocusable(false);
 
         JPanel paneltop = new JPanel(new BorderLayout());
         JPanel panelimg1 = new JPanel();
@@ -91,14 +106,8 @@ public class DomineeringGUI extends JFrame implements ActionListener {
         panelgrid.add(comboplayer1);
         panelgrid.add(labelPlayer2);
         panelgrid.add(comboplayer2);
-
-        // Make the button span two columns
-        GridBagConstraints buttonConstraints = new GridBagConstraints();
-        buttonConstraints.gridwidth = 2;
-        buttonConstraints.fill = GridBagConstraints.HORIZONTAL;
-        panelgrid.add(btnplay, buttonConstraints);
-//        panelgrid.setBackground(new Color(241 ,179 ,139 ,255));
-//        panelgrid.setOpaque(true);
+        panelgrid.add(btnplay);
+        panelgrid.add(btncnt);
         panelbuttom.add(panelgrid);
 
         //this.getContentPane().setBackground(new Color(241 ,179 ,139 ,255));
@@ -133,6 +142,10 @@ public class DomineeringGUI extends JFrame implements ActionListener {
                 new DomineeringH2P(size);
             }
 
+        }
+        if (e.getSource() == btncnt) {
+            this.dispose();
+            domineeringGame.loadGameI();
         }
     }
     public static void main(String[] args) {

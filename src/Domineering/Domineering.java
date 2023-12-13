@@ -235,8 +235,27 @@ public class Domineering extends GameSearch{
         Vector best = maxValue(0, p, -999, 99);
         return (Position) best.elementAt(1);
     }
+    public Position getProgramMoveH(Position p) {
+        Vector best = maxValue(0, p, -999, 99);
+        return (Position) best.elementAt(1);
+    }
+    public Position getProgramMoveV(Position p) {
+        Vector best = minValue(0, p, -999, 99);
+        return (Position) best.elementAt(1);
+    }
     // Méthode pour sauvegarder la partie
     public void saveGame(Position startingPosition, boolean player1, boolean player1Turn, int player1HelpCount, int player2HelpCount) {
+        try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream("saved_game.ser"))) {
+            oos.writeObject(startingPosition);
+            oos.writeBoolean(player1Turn);
+            oos.writeInt(player1HelpCount);
+            oos.writeInt(player2HelpCount);
+            System.out.println("Game saved successfully.");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+    public void saveGameI(Position startingPosition, boolean player1Turn , int player1HelpCount, int player2HelpCount) {
         try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream("saved_game.ser"))) {
             oos.writeObject(startingPosition);
             oos.writeBoolean(player1Turn);
@@ -259,6 +278,18 @@ public class Domineering extends GameSearch{
             int player2HelpCount = ois.readInt();
 
             playLoadedGame(savedPosition, player1Turn, player1HelpCount, player2HelpCount);
+        } catch (IOException | ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+    }
+    public void loadGameI() {
+        try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream("saved_game.ser"))) {
+            Position savedPosition = (Position) ois.readObject();
+            boolean player1Turn = ois.readBoolean();
+            int player1HelpCount = ois.readInt();
+            int player2HelpCount = ois.readInt();
+
+            new DomineeringLoadedGame(savedPosition, player1Turn, player1HelpCount, player2HelpCount);
         } catch (IOException | ClassNotFoundException e) {
             e.printStackTrace();
         }

@@ -2,7 +2,9 @@
 
 package Domineering;
 
-public class DomineeringPosition extends Position {
+import java.io.Serializable;
+
+public class DomineeringPosition extends Position implements Serializable {
     public static final int EMPTY = 0;
     public static final int VERTICAL = 1;
     public static final int HORIZONTAL = -1;
