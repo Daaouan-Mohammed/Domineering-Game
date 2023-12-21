@@ -32,7 +32,7 @@ public abstract class GameSearch {
 
 
 
-    public Vector minValue(int depth, Position p, float alpha, float beta) {
+    /*public Vector minValue(int depth, Position p, float alpha, float beta) {
         Vector best;
         if (this.reachedMaxDepth(p, depth)) {
             best = new Vector(2);
@@ -102,12 +102,85 @@ public abstract class GameSearch {
         }
     }
     //////////////////////////////////////////////////////////
+*/
+
+    public Vector maxValue(int depth, Position p, boolean player, float alpha, float beta) {
+        Vector v = new Vector(2);
+        if (wonPosition(p, PROGRAM)) {
+            v.addElement(1000000.0f);
+            v.addElement(null);
+            return v;
+        }
+        if (wonPosition(p, HUMAN)) {
+            v.addElement(-1000000.0f);
+            v.addElement(null);
+            return v;
+        }
+        if (reachedMaxDepth(p, depth)) {
+            float value = positionEvaluation(p, player);
+            v.addElement(value);
+            v.addElement(null);
+            return v;
+        }
+        float bestValue = -1000000.0f;
+        Position [] moves = possiblePositions(p, player);
+        Position bestPosition = null;
+        for (int i=0; i<moves.length; i++) {
+            Vector v2 = minValue(depth+1, moves[i], !player, alpha, beta);
+            float value = (Float) v2.elementAt(0);
+            if (value > bestValue) {
+                bestValue = value;
+                bestPosition = moves[i];
+            }
+            if (value > alpha) alpha = value;
+            if (alpha >= beta) break;
+        }
+        v.addElement(bestValue);
+        v.addElement(bestPosition);
+        return v;
+    }
+
+    public Vector minValue(int depth, Position p, boolean player, float alpha, float beta) {
+        Vector v = new Vector(2);
+        if (wonPosition(p, PROGRAM)) {
+            v.addElement(1000000.0f);
+            v.addElement(null);
+            return v;
+        }
+        if (wonPosition(p, HUMAN)) {
+            v.addElement(new Float(-1000000.0f));
+            v.addElement(null);
+            return v;
+        }
+        if (reachedMaxDepth(p, depth)) {
+            float value = positionEvaluation(p, player);
+            v.addElement(value);
+            v.addElement(null);
+            return v;
+        }
+        float bestValue = 1000000.0f;
+        Position [] moves = possiblePositions(p, player);
+        Position bestPosition = null;
+        for (int i=0; i<moves.length; i++) {
+            Vector v2 = maxValue(depth+1, moves[i], !player, alpha, beta);
+            float value = (Float) v2.elementAt(0);
+            if (value < bestValue) {
+                bestValue = value;
+                bestPosition = moves[i];
+            }
+            if (value < beta) beta = value;
+            if (alpha >= beta) break;
+        }
+        v.addElement(bestValue);
+        v.addElement(bestPosition);
+        return v;
+    }
 
     public void playGame(Position startingPosition, boolean humanPlayFirst) {
         int humanHelpCount = 0;
 
         if (!humanPlayFirst) {
-            Vector v = this.minValue(0, startingPosition, Float.MIN_VALUE, Float.MAX_VALUE);
+            Vector v = this.minValue(0, startingPosition,HUMAN, Float.MIN_VALUE, Float.MAX_VALUE);
             startingPosition = (Position)v.elementAt(1);
         }
 
@@ -131,7 +204,7 @@ public abstract class GameSearch {
                 String helpResponse = scanner.next().toLowerCase();
 
                 if (helpResponse.equals("yes")) {
-                    Vector helpResult = this.minValue(0, startingPosition, Float.MIN_VALUE, Float.MAX_VALUE);
+                    Vector helpResult = this.minValue(0, startingPosition, HUMAN,Float.MIN_VALUE, Float.MAX_VALUE);
                     Enumeration enum2 = helpResult.elements();
 
                     while (enum2.hasMoreElements()) {
@@ -174,7 +247,7 @@ public abstract class GameSearch {
             }
 
             //   this.printPosition(startingPosition);
-            Vector v = this.maxValue(0, startingPosition, Float.MIN_VALUE, Float.MAX_VALUE);
+            Vector v = this.maxValue(0, startingPosition, PROGRAM,Float.MIN_VALUE, Float.MAX_VALUE);
             Enumeration enum2 = v.elements();
 
             while(enum2.hasMoreElements()) {
@@ -212,7 +285,7 @@ public abstract class GameSearch {
                     String helpResponse = scanner.next().toLowerCase();
 
                     if (helpResponse.equals("yes")) {
-                        Vector v = minValue(0, startingPosition, Float.MIN_VALUE, Float.MAX_VALUE);
+                        Vector v = minValue(0, startingPosition,HUMAN, Float.MIN_VALUE, Float.MAX_VALUE);
                         startingPosition = (Position) v.elementAt(1);
                         player1HelpCount++;
                     } else if (helpResponse.equals("save")) {
@@ -236,7 +309,7 @@ public abstract class GameSearch {
                     String helpResponse = scanner.next().toLowerCase();
 
                     if (helpResponse.equals("yes")) {
-                        Vector v = maxValue(0, startingPosition, Float.MIN_VALUE, Float.MAX_VALUE);
+                        Vector v = maxValue(0, startingPosition,PROGRAM, Float.MIN_VALUE, Float.MAX_VALUE);
                         startingPosition = (Position) v.elementAt(1);
                         player2HelpCount++;
                     } else if (helpResponse.equals("save")) {
