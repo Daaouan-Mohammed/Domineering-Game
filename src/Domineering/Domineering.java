@@ -232,15 +232,15 @@ public class Domineering extends GameSearch{
     }
 
     public Position getProgramMove(Position p) {
-        Vector best = maxValue(0, p, -999, 99);
+        Vector best = maxValue(0, p,PROGRAM, -999, 99);
         return (Position) best.elementAt(1);
     }
     public Position getProgramMoveH(Position p) {
-        Vector best = maxValue(0, p, -999, 99);
+        Vector best = maxValue(0, p,PROGRAM, -999, 99);
         return (Position) best.elementAt(1);
     }
     public Position getProgramMoveV(Position p) {
-        Vector best = minValue(0, p, -999, 99);
+        Vector best = maxValue(0, p,HUMAN, -999, 99);
         return (Position) best.elementAt(1);
     }
     // Méthode pour sauvegarder la partie
@@ -328,8 +328,8 @@ public class Domineering extends GameSearch{
 
                 if (helpResponse.equals("yes")) {
                     // Utilisez votre méthode d'aide pour obtenir la prochaine position
-                    Vector v = currentPlayerTurn ? minValue(0, currentPosition, Float.MIN_VALUE, Float.MAX_VALUE)
-                            : maxValue(0, currentPosition, Float.MIN_VALUE, Float.MAX_VALUE);
+                    Vector v = currentPlayerTurn ? minValue(0, currentPosition,HUMAN, Float.MIN_VALUE, Float.MAX_VALUE)
+                            : maxValue(0, currentPosition,PROGRAM, Float.MIN_VALUE, Float.MAX_VALUE);
                     currentPosition = (DomineeringPosition) v.elementAt(1);
                     currentPlayerHelpCount++;
                 } else {
