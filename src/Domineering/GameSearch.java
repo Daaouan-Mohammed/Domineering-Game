@@ -103,6 +103,15 @@ public abstract class GameSearch {
     }
     //////////////////////////////////////////////////////////
 */
+    public Vector alpha_beta(int depth, Position p, boolean player, float alpha, float beta){
+        return alpha_beta_helper(depth, p, player,  alpha,  beta);
+
+    }
+    public Vector alpha_beta_helper(int depth, Position p, boolean player, float alpha, float beta){
+        Vector max = maxValue( depth, p, player,  alpha, beta);
+        Vector min =minValue(depth,  p, player,alpha,  beta);
+        return max;
+    }
 
     public Vector maxValue(int depth, Position p, boolean player, float alpha, float beta) {
         Vector v = new Vector(2);

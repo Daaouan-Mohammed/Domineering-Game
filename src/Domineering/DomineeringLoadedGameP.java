@@ -5,8 +5,7 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
-public class DomineeringLoadedGame extends JFrame implements ActionListener {
-
+public class DomineeringLoadedGameP extends JFrame implements ActionListener{
     boolean player ;
     private JLabel status;
     private int gridSize;
@@ -18,7 +17,7 @@ public class DomineeringLoadedGame extends JFrame implements ActionListener {
 
     private DomineeringPosition currentPosition;
     private Domineering domineeringGame;
-    public DomineeringLoadedGame(Position savedPosition, boolean player1Turn, int player1HelpCount, int player2HelpCount) {
+    public DomineeringLoadedGameP(Position savedPosition, boolean player1Turn, int player1HelpCount) {
         domineeringGame = new Domineering();
         currentPosition = (DomineeringPosition) savedPosition;
         this.gridSize=currentPosition.board[0].length;
@@ -253,7 +252,7 @@ public class DomineeringLoadedGame extends JFrame implements ActionListener {
 
                 if (gameOver(false)) {
                     JOptionPane.showMessageDialog(
-                            DomineeringLoadedGame.this,
+                            DomineeringLoadedGameP.this,
                             "Player 1 wins!",
                             "Game Over",
                             JOptionPane.INFORMATION_MESSAGE
@@ -271,7 +270,7 @@ public class DomineeringLoadedGame extends JFrame implements ActionListener {
 
                 if (gameOver(true)) {
                     JOptionPane.showMessageDialog(
-                            DomineeringLoadedGame.this,
+                            DomineeringLoadedGameP.this,
                             "Player 2 wins!",
                             "Game Over",
                             JOptionPane.INFORMATION_MESSAGE

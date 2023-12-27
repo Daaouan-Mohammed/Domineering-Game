@@ -1,7 +1,6 @@
 package Domineering;
 
 import java.io.*;
-import java.util.ArrayList;
 import java.util.Scanner;
 import java.util.Vector;
 
@@ -105,14 +104,14 @@ public class Domineering extends GameSearch{
 
     }
 
-    private boolean islegalMove(int i, int j, boolean player, DomineeringPosition pos) {
-        int dominoValue = player ? 1 : -1;
-        if (dominoValue == -1 && i < pos.board[0].length - 1 && pos.board[i][j] == 0 && pos.board[i + 1][j] == 0) {
-            return true;
-        } else {
-            return dominoValue == 1 && i < pos.board[1].length - 1 && pos.board[i][j] == 0 && pos.board[i][j + 1] == 0;
-        }
-    }
+//    private boolean islegalMove(int i, int j, boolean player, DomineeringPosition pos) {
+//        int dominoValue = player ? 1 : -1;
+//        if (dominoValue == -1 && i < pos.board[0].length - 1 && pos.board[i][j] == 0 && pos.board[i + 1][j] == 0) {
+//            return true;
+//        } else {
+//            return dominoValue == 1 && i < pos.board[1].length - 1 && pos.board[i][j] == 0 && pos.board[i][j + 1] == 0;
+//        }
+//    }
 
     public Position[] possiblePositions(Position p, boolean player) {
         DomineeringPosition position = (DomineeringPosition)p;
@@ -207,7 +206,7 @@ public class Domineering extends GameSearch{
 
     public boolean reachedMaxDepth(Position p, int depth) {
         boolean ret = false;
-        if (depth >= 1) {
+        if (depth >=1) {
             return true;
         } else {
             if (this.wonPosition(p, false)) {
@@ -232,15 +231,15 @@ public class Domineering extends GameSearch{
     }
 
     public Position getProgramMove(Position p) {
-        Vector best = maxValue(0, p,PROGRAM, -999, 99);
+        Vector best = maxValue(0, p,PROGRAM, -100000, 10000);
         return (Position) best.elementAt(1);
     }
     public Position getProgramMoveH(Position p) {
-        Vector best = maxValue(0, p,PROGRAM, -999, 99);
+        Vector best = maxValue(0, p,PROGRAM, -100000, 10000);
         return (Position) best.elementAt(1);
     }
     public Position getProgramMoveV(Position p) {
-        Vector best = maxValue(0, p,HUMAN, -999, 99);
+        Vector best = maxValue(0, p,HUMAN, -100000, 10000);
         return (Position) best.elementAt(1);
     }
     // Méthode pour sauvegarder la partie
@@ -266,7 +265,17 @@ public class Domineering extends GameSearch{
             e.printStackTrace();
         }
     }
+    public void saveGameII(Position startingPosition, boolean player1Turn , int player1HelpCount) {
+        try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream("saved_game.ser"))) {
+            oos.writeObject(startingPosition);
+            oos.writeBoolean(player1Turn);
+            oos.writeInt(player1HelpCount);
 
+            System.out.println("Game saved successfully.");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 
 
     // Méthode pour charger et reprendre une partie sauvegardée
@@ -288,8 +297,14 @@ public class Domineering extends GameSearch{
             boolean player1Turn = ois.readBoolean();
             int player1HelpCount = ois.readInt();
             int player2HelpCount = ois.readInt();
+            if (player2HelpCount<0){
+                new DomineeringLoadedGameP(savedPosition, player1Turn, player1HelpCount);
+            }else {
+                new DomineeringLoadedGameH(savedPosition, player1Turn, player1HelpCount, player2HelpCount);
+            }
+            System.out.println("player2HelpCount "+player2HelpCount);
 
-            new DomineeringLoadedGame(savedPosition, player1Turn, player1HelpCount, player2HelpCount);
+
         } catch (IOException | ClassNotFoundException e) {
             e.printStackTrace();
         }

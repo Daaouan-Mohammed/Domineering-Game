@@ -7,8 +7,11 @@ import java.awt.event.ActionListener;
 
 public class DomineeringH2P extends JFrame implements ActionListener {
     boolean player =true;
-    private JLabel status;
+    int player1HelpCount=2;
+//    int player2HelpCount=2;
+    private JLabel status,help1;
     private int gridSize;
+    JButton help11;
     JButton btnSauvgarde;
     JButton btnRetour;
     JButton button;
@@ -78,8 +81,9 @@ public class DomineeringH2P extends JFrame implements ActionListener {
         JLabel possiblemove11=new JLabel();
         JLabel safemove1=new JLabel("Safe Moves ");
         JLabel safemove11=new JLabel();
-        JButton help11= new JButton("Ask for Help (2)");
-        JLabel help1=new JLabel();
+        help11 = new JButton("Ask for Help (2)");
+        help11.addActionListener(this);
+        help1 = new JLabel();
 
         paneltopbuttom.add(player1);
         paneltopbuttom.add(player11);
@@ -208,14 +212,33 @@ public class DomineeringH2P extends JFrame implements ActionListener {
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        if (e.getSource() == btnSauvgarde) {
-            System.out.println(btnSauvgarde.getText());
+        if (e.getSource() == btnSauvgarde){
+            domineeringGame.saveGameI(currentPosition,player,player1HelpCount,-1);
+            closeCurrentWindowAndOpenNewOne();
         }
-        else if (e.getSource() == btnRetour) {
+        if (e.getSource() == btnRetour) {
             System.out.println(btnRetour.getText());
             this.dispose();
             new DomineeringGUI();
         }
+        if (e.getSource() == help11 && player==true) {
+            if (player1HelpCount!=0){
+                currentPosition = (DomineeringPosition) domineeringGame.getProgramMoveV(currentPosition);
+                updateUI(currentPosition);
+                player1HelpCount--;
+                help11.setText("Ask for Help ("+player1HelpCount+")");
+                player=false;
+            }
+
+        }
+//        if (e.getSource() == btnSauvgarde) {
+//            System.out.println(btnSauvgarde.getText());
+//        }
+//        else if (e.getSource() == btnRetour) {
+//            System.out.println(btnRetour.getText());
+//            this.dispose();
+//            new DomineeringGUI();
+//        }
 
     }
 
@@ -223,6 +246,75 @@ public class DomineeringH2P extends JFrame implements ActionListener {
         this.dispose(); // Close the current window
         new DomineeringGUI(); // Open the new window (replace YourNewWindow with your actual class)
     }
+//    public class ButtonListener implements ActionListener {
+//        @Override
+//        public void actionPerformed(ActionEvent e) {
+//            int a;
+//            int b;
+//            DomineeringButton clicked = (DomineeringButton) e.getSource();
+//            a = clicked.getRow();
+//            b = clicked.getCol();
+//            DomineeringMove move = new DomineeringMove(a, b);
+//
+//            if (player  && !gameOver(true)) {
+//                if(isValidMove(a, b, true)){
+//                currentPosition = (DomineeringPosition) domineeringGame.makeMove(currentPosition, true, move);
+//
+//                updateUI(currentPosition);
+//
+//
+//                if (gameOver(false)) {
+//                    JOptionPane.showMessageDialog(
+//                            DomineeringH2P.this,
+//                            "Player 1 wins!",
+//                            "Game Over",
+//                            JOptionPane.INFORMATION_MESSAGE
+//                    );
+//                    closeCurrentWindowAndOpenNewOne();
+//                } else {
+//                    player = false;
+//                    status.setText(player + "'s turn");
+//
+//                }
+//
+//            } else {
+//                status.setText("Invalid move!\n" + "Try again " + player);
+//            }}
+//             if (!player && !gameOver(false)) {
+////                currentPosition =(DomineeringPosition)domineeringGame.makeMove(currentPosition,false,move);
+//                currentPosition = (DomineeringPosition) domineeringGame.getProgramMoveH(currentPosition);
+//                updateUI(currentPosition);
+//
+//                if (gameOver(true)) {
+//                    JOptionPane.showMessageDialog(
+//                            DomineeringH2P.this,
+//                            "Player 2 wins!",
+//                            "Game Over",
+//                            JOptionPane.INFORMATION_MESSAGE
+//                    );
+//                    closeCurrentWindowAndOpenNewOne();
+//                } else {
+//                    player = true;
+//                    status.setText(player + "'s turn");
+//                }
+//
+//            }
+//        }
+//    }
+//    public boolean gameOver(boolean player) {
+//        int row = 0;
+//        boolean foundMove = false;
+//        while (row < currentPosition.board[0].length && !foundMove) {
+//            int col = 0;
+//            while (col < currentPosition.board[1].length & !foundMove) {
+//                foundMove = isValidMove(row, col, player);
+//                col++;
+//            }
+//            row++;
+//        }
+//        return !foundMove;
+//    }
+//}
     public class ButtonListener implements ActionListener {
         @Override
         public void actionPerformed(ActionEvent e) {
@@ -239,9 +331,9 @@ public class DomineeringH2P extends JFrame implements ActionListener {
 
                     updateUI(currentPosition);
                     System.out.println(player);
-                    if (domineeringGame.wonPosition(currentPosition, true)) {
-                        status.setText("No more moves...\n" + "Program wins!");
-                    }
+//                    if (domineeringGame.wonPosition(currentPosition, true)) {
+//                        status.setText("No more moves...\n" + "Program wins!");
+//                    }
                     player = false;
                 } else {
                     status.setText("Invalid move!\n" + "Try again " + true);
@@ -264,9 +356,9 @@ public class DomineeringH2P extends JFrame implements ActionListener {
                 System.out.println(currentPosition.board[0][0]);
                 currentPosition = (DomineeringPosition) domineeringGame.getProgramMove(currentPosition);
                 updateUI(currentPosition);
-                if (domineeringGame.wonPosition(currentPosition, false) ){
-                    status.setText("No more moves...\n" + "Human wins!");
-                }
+//                if (domineeringGame.wonPosition(currentPosition, false) ){
+//                    status.setText("No more moves...\n" + "Human wins!");
+//                }
                  player = true;
             }
              if(domineeringGame.wonPosition(currentPosition, false)){
