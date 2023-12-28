@@ -19,10 +19,10 @@ public class DomineeringH2P extends JFrame implements ActionListener {
     public int state = 0;
     private DomineeringPosition currentPosition;
     private Domineering domineeringGame;
-    DomineeringH2P(int size){
+    DomineeringH2P(int size,int depth){
 
         this.gridSize = size;
-        domineeringGame = new Domineering();
+        domineeringGame = new Domineering(depth);
         currentPosition = new DomineeringPosition(gridSize,gridSize);
         this.buttons = new DomineeringButton[gridSize][gridSize];
 //////////////Paneltop////////////////////////////////
@@ -231,6 +231,26 @@ public class DomineeringH2P extends JFrame implements ActionListener {
             }
 
         }
+        if (!player && !gameOver(false)) {
+            currentPosition = (DomineeringPosition) domineeringGame.getProgramMove(currentPosition);
+
+            updateUI(currentPosition);
+
+            if (gameOver(true)) {
+                JOptionPane.showMessageDialog(
+                        DomineeringH2P.this,
+                        "Player 2 wins!",
+                        "Game Over",
+                        JOptionPane.INFORMATION_MESSAGE
+                );
+                closeCurrentWindowAndOpenNewOne();
+            } else {
+                player = true;
+                status.setText(player + "'s turn");
+            }
+        } else {
+            status.setText("Invalid move!\n" + "Try again " + player);
+        }
 //        if (e.getSource() == btnSauvgarde) {
 //            System.out.println(btnSauvgarde.getText());
 //        }
@@ -325,7 +345,7 @@ public class DomineeringH2P extends JFrame implements ActionListener {
             a = clicked.getRow();
             b = clicked.getCol();
             DomineeringMove move = new DomineeringMove(a, b);
-            if (player && !domineeringGame.wonPosition(currentPosition, true)){
+            if (player && !gameOver(true)){
                 if (isValidMove(a, b, true)) {
                     currentPosition = (DomineeringPosition) domineeringGame.makeMove(currentPosition, true, move);
 
@@ -339,7 +359,7 @@ public class DomineeringH2P extends JFrame implements ActionListener {
                     status.setText("Invalid move!\n" + "Try again " + true);
                 }
             }
-            if(domineeringGame.wonPosition(currentPosition, true)){
+            if(gameOver(false)){
                 JOptionPane.showMessageDialog(
                         DomineeringH2P.this,
                         "Human wins!",
@@ -350,7 +370,7 @@ public class DomineeringH2P extends JFrame implements ActionListener {
 
             }
 
-             if (!player && !domineeringGame.wonPosition(currentPosition, false)) {
+             if (!player && !gameOver(false)) {
                 System.out.println(player);
                 System.out.println("ppppppp");
                 System.out.println(currentPosition.board[0][0]);
@@ -361,7 +381,7 @@ public class DomineeringH2P extends JFrame implements ActionListener {
 //                }
                  player = true;
             }
-             if(domineeringGame.wonPosition(currentPosition, false)){
+             if(gameOver(true)){
                  JOptionPane.showMessageDialog(
                          DomineeringH2P.this,
                          "Program wins!",
@@ -373,20 +393,114 @@ public class DomineeringH2P extends JFrame implements ActionListener {
 
         }
     }
-
+//
+//    public boolean gameOver(boolean player) {
+//
+//        int row = 0;
+//        boolean foundMove = false;
+//        while (row < currentPosition.board.length && !foundMove) {
+//            int col = 0;
+//            while (col < currentPosition.board[row].length & !foundMove) {
+//                foundMove = isValidMove(row, col, player);
+//                col++;
+//            }
+//            row++;
+//        }
+//        return !foundMove;
+//    }
+//}
+//public class ButtonListener implements ActionListener {
+//
+//    @Override
+//    public void actionPerformed(ActionEvent e) {
+//        int a;
+//        int b;
+//
+//        DomineeringButton clicked = (DomineeringButton) e.getSource();
+//        a = clicked.getRow();
+//        b = clicked.getCol();
+//        DomineeringMove move = new DomineeringMove(a, b);
+//
+//        if (player && isValidMove(a, b, true) && !gameOver(true)) {
+//
+//            currentPosition = (DomineeringPosition) domineeringGame.makeMove(currentPosition, true, move);
+//
+//            updateUI(currentPosition);
+//
+//
+//            if (gameOver(false)) {
+//                JOptionPane.showMessageDialog(
+//                        DomineeringH2P.this,
+//                        "Player 1 wins!",
+//                        "Game Over",
+//                        JOptionPane.INFORMATION_MESSAGE
+//                );
+//                closeCurrentWindowAndOpenNewOne();
+//            } else {
+//                player = false;
+//                status.setText(player + "'s turn");
+//            }
+//
+//        } if (!player  && !gameOver(false)) {
+//            currentPosition = (DomineeringPosition) domineeringGame.getProgramMove(currentPosition);
+//
+//            updateUI(currentPosition);
+//
+//            if (gameOver(true)) {
+//                JOptionPane.showMessageDialog(
+//                        DomineeringH2P.this,
+//                        "Player 2 wins!",
+//                        "Game Over",
+//                        JOptionPane.INFORMATION_MESSAGE
+//                );
+//                closeCurrentWindowAndOpenNewOne();
+//            } else {
+//                player = true;
+//                status.setText(player + "'s turn");
+//            }
+//
+//        } else {
+//            status.setText("Invalid move!\n" + "Try again " + player);
+//        }
+//    }
+//}
     public boolean gameOver(boolean player) {
-
         int row = 0;
         boolean foundMove = false;
-        while (row < currentPosition.board.length && !foundMove) {
-            int col = 0;
-            while (col < currentPosition.board[row].length & !foundMove) {
-                foundMove = isValidMove(row, col, player);
-                col++;
+        try{
+            while (row < currentPosition.board[0].length && !foundMove) {
+                int col = 0;
+                while (col < currentPosition.board[1].length & !foundMove) {
+                    foundMove = isValidMove(row, col, player);
+                    col++;
+                }
+                row++;
             }
-            row++;
+            return !foundMove;
+        }catch (NullPointerException e) {
+//            e.printStackTrace(); // Optional: Print the stack trace for debugging purposes
+            if (!player)
+                // Execute your code when NullPointerException occurs
+                JOptionPane.showMessageDialog(
+                        DomineeringH2P.this,
+                        "Player wins!",
+                        "Game Over",
+                        JOptionPane.INFORMATION_MESSAGE
+                );
+            else {
+                JOptionPane.showMessageDialog(
+                        DomineeringH2P.this,
+                        "Program wins!",
+                        "Game Over",
+                        JOptionPane.INFORMATION_MESSAGE
+                );
+
+            }
+
+            closeCurrentWindowAndOpenNewOne();
         }
-        return !foundMove;
+        return false;
     }
 }
+
 

@@ -122,27 +122,43 @@ public class DomineeringGUI extends JFrame implements ActionListener {
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        if (e.getSource() == comboSize) {
-            System.out.println(comboSize.getSelectedItem());
-        }
-        if (e.getSource() == comboplayer1) {
-            System.out.println(comboplayer1.getSelectedItem());
-        }
-        if (e.getSource() == comboplayer2) {
-            System.out.println(comboplayer2.getSelectedItem());
-        }
+//        if (e.getSource() == comboSize) {
+//            System.out.println(comboSize.getSelectedItem());
+//        }
+//        if (e.getSource() == comboplayer1) {
+//            System.out.println(comboplayer1.getSelectedItem());
+//        }
+//        if (e.getSource() == comboplayer2) {
+//            System.out.println(comboplayer2.getSelectedItem());
+//        }
         if (e.getSource() == btnplay) {
             int size = (int) comboSize.getSelectedItem();
             int player= comboplayer2.getSelectedIndex();
-            if (player==0){
-                this.dispose();
-                new DomineeringH2H(size);
-            }else {
-                this.dispose();
-                new DomineeringH2P(size);
+            int depth;
+                switch (player) {
+                    case 0: // HUMAN
+                        this.dispose();
+                        new DomineeringH2H(size);
+                        break;
+                    case 2: // Program: Level2
+                         depth=3;
+                        this.dispose();
+                        new DomineeringH2P(size, depth);
+                        break;
+                    case 3: // Program: Level3
+                        depth=7;
+                        this.dispose();
+                        new DomineeringH2P(size, depth);
+                        break;
+                    default: // Program: Level1
+                        depth=1;
+                        this.dispose();
+                        new DomineeringH2P(size, depth);
+                        break;
+                }
             }
 
-        }
+
         if (e.getSource() == btncnt) {
             this.dispose();
             domineeringGame.loadGameI();

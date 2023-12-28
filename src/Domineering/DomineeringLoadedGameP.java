@@ -7,8 +7,10 @@ import java.awt.event.ActionListener;
 
 public class DomineeringLoadedGameP extends JFrame implements ActionListener{
     boolean player ;
-    private JLabel status;
+    private JLabel status ,help1;
+    int player1HelpCount;
     private int gridSize;
+    JButton help11;
     JButton btnSauvgarde;
     JButton btnRetour;
     JButton button;
@@ -23,7 +25,7 @@ public class DomineeringLoadedGameP extends JFrame implements ActionListener{
         this.gridSize=currentPosition.board[0].length;
         this.buttons = new DomineeringButton[gridSize][gridSize];
         this.player=player1Turn;
-
+        this.player1HelpCount=player1HelpCount;
 
         //////////////Paneltop////////////////////////////////
         JPanel paneltop = new JPanel(new BorderLayout());
@@ -71,18 +73,19 @@ public class DomineeringLoadedGameP extends JFrame implements ActionListener{
         JPanel panelbuttombuttom = new JPanel();
 
         /////paneltopbuttom///////
-        paneltopbuttom.setPreferredSize(new Dimension(250, 200));
-        paneltopbuttom.setLayout(new GridLayout(5, 2));
+        paneltopbuttom.setPreferredSize(new Dimension(250,200));
+        paneltopbuttom.setLayout(new GridLayout(5,2));
         JLabel player1 = new JLabel("player1:");
-        JLabel player11 = new JLabel();
-        JLabel maxmove1 = new JLabel("Maximal Moves ");
-        JLabel maxmove11 = new JLabel();
-        JLabel possiblemove1 = new JLabel("Possible Moves ");
-        JLabel possiblemove11 = new JLabel();
-        JLabel safemove1 = new JLabel("Safe Moves ");
-        JLabel safemove11 = new JLabel();
-        JButton help11 = new JButton("Ask for Help (2)");
-        JLabel help1 = new JLabel();
+        JLabel player11 =new JLabel();
+        JLabel maxmove1=new JLabel("Maximal Moves ");
+        JLabel maxmove11=new JLabel();
+        JLabel possiblemove1=new JLabel("Possible Moves ");
+        JLabel possiblemove11=new JLabel();
+        JLabel safemove1=new JLabel("Safe Moves ");
+        JLabel safemove11=new JLabel();
+        help11 = new JButton("Ask for Help ("+this.player1HelpCount+")");
+        help11.addActionListener(this);
+        help1 = new JLabel();
 
         paneltopbuttom.add(player1);
         paneltopbuttom.add(player11);
@@ -107,7 +110,6 @@ public class DomineeringLoadedGameP extends JFrame implements ActionListener{
         JLabel possiblemove22 = new JLabel();
         JLabel safemove2 = new JLabel("Safe Moves ");
         JLabel safemove22 = new JLabel();
-        JButton help22 = new JButton("Ask for Help (2)");
         JLabel help2 = new JLabel();
 
         panelbuttombuttom.add(player2);
@@ -118,7 +120,6 @@ public class DomineeringLoadedGameP extends JFrame implements ActionListener{
         panelbuttombuttom.add(possiblemove22);
         panelbuttombuttom.add(safemove2);
         panelbuttombuttom.add(safemove22);
-        panelbuttombuttom.add(help22);
         panelbuttombuttom.add(help2);
 
 
@@ -216,14 +217,44 @@ public class DomineeringLoadedGameP extends JFrame implements ActionListener{
     @Override
     public void actionPerformed(ActionEvent e) {
         if (e.getSource() == btnSauvgarde){
-            domineeringGame.saveGameI(currentPosition,player,2,2);
+            domineeringGame.saveGameI(currentPosition,player,player1HelpCount,-1);
             closeCurrentWindowAndOpenNewOne();
-        }else if (e.getSource() == btnRetour) {
+        }
+        if (e.getSource() == btnRetour) {
             System.out.println(btnRetour.getText());
             this.dispose();
             new DomineeringGUI();
         }
+        if (e.getSource() == help11 && player==true) {
+            if (player1HelpCount!=0){
+                currentPosition = (DomineeringPosition) domineeringGame.getProgramMoveV(currentPosition);
+                updateUI(currentPosition);
+                player1HelpCount--;
+                help11.setText("Ask for Help ("+player1HelpCount+")");
+                player=false;
+            }
 
+        }
+        if (!player && !gameOver(false)) {
+            currentPosition = (DomineeringPosition) domineeringGame.getProgramMove(currentPosition);
+
+            updateUI(currentPosition);
+
+            if (gameOver(true)) {
+                JOptionPane.showMessageDialog(
+                        DomineeringLoadedGameP.this,
+                        "Player 2 wins!",
+                        "Game Over",
+                        JOptionPane.INFORMATION_MESSAGE
+                );
+                closeCurrentWindowAndOpenNewOne();
+            } else {
+                player = true;
+                status.setText(player + "'s turn");
+            }
+        } else {
+            status.setText("Invalid move!\n" + "Try again " + player);
+        }
     }
 
     private void closeCurrentWindowAndOpenNewOne() {
@@ -263,8 +294,8 @@ public class DomineeringLoadedGameP extends JFrame implements ActionListener{
                     status.setText(player + "'s turn");
                 }
 
-            } else if (!player && isValidMove(a, b, false) && !gameOver(false)) {
-                currentPosition =(DomineeringPosition)domineeringGame.makeMove(currentPosition,false,move);
+            } if (!player  && !gameOver(false)) {
+                currentPosition = (DomineeringPosition) domineeringGame.getProgramMove(currentPosition);
 
                 updateUI(currentPosition);
 
@@ -289,6 +320,7 @@ public class DomineeringLoadedGameP extends JFrame implements ActionListener{
     public boolean gameOver(boolean player) {
         int row = 0;
         boolean foundMove = false;
+        try{
         while (row < currentPosition.board[0].length && !foundMove) {
             int col = 0;
             while (col < currentPosition.board[1].length & !foundMove) {
@@ -298,5 +330,28 @@ public class DomineeringLoadedGameP extends JFrame implements ActionListener{
             row++;
         }
         return !foundMove;
+        }catch (NullPointerException e) {
+//            e.printStackTrace(); // Optional: Print the stack trace for debugging purposes
+            if (!player)
+            // Execute your code when NullPointerException occurs
+            JOptionPane.showMessageDialog(
+                    DomineeringLoadedGameP.this,
+                    "Program wins!",
+                    "Game Over",
+                    JOptionPane.INFORMATION_MESSAGE
+            );
+            else {
+                JOptionPane.showMessageDialog(
+                        DomineeringLoadedGameP.this,
+                        "Player wins!",
+                        "Game Over",
+                        JOptionPane.INFORMATION_MESSAGE
+                );
+
+            }
+
+            closeCurrentWindowAndOpenNewOne();
+        }
+        return false;
     }
 }

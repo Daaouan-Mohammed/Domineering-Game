@@ -8,8 +8,12 @@ import java.awt.event.ActionListener;
 public class DomineeringLoadedGameH extends JFrame implements ActionListener {
 
     boolean player ;
-    private JLabel status;
+    int player1HelpCount;
+    int player2HelpCount;
+    private JLabel status ,help1,help2;
     private int gridSize;
+    JButton help22;
+    JButton help11;
     JButton btnSauvgarde;
     JButton btnRetour;
     JButton button;
@@ -24,7 +28,8 @@ public class DomineeringLoadedGameH extends JFrame implements ActionListener {
         this.gridSize=currentPosition.board[0].length;
         this.buttons = new DomineeringButton[gridSize][gridSize];
         this.player=player1Turn;
-
+        this.player1HelpCount=player1HelpCount;
+        this.player2HelpCount=player2HelpCount;
 
         //////////////Paneltop////////////////////////////////
         JPanel paneltop = new JPanel(new BorderLayout());
@@ -82,8 +87,9 @@ public class DomineeringLoadedGameH extends JFrame implements ActionListener {
         JLabel possiblemove11 = new JLabel();
         JLabel safemove1 = new JLabel("Safe Moves ");
         JLabel safemove11 = new JLabel();
-        JButton help11 = new JButton("Ask for Help (2)");
-        JLabel help1 = new JLabel();
+        help11 = new JButton("Ask for Help ("+this.player1HelpCount+")");
+        help11.addActionListener(this);
+        help1 = new JLabel();
 
         paneltopbuttom.add(player1);
         paneltopbuttom.add(player11);
@@ -108,8 +114,9 @@ public class DomineeringLoadedGameH extends JFrame implements ActionListener {
         JLabel possiblemove22 = new JLabel();
         JLabel safemove2 = new JLabel("Safe Moves ");
         JLabel safemove22 = new JLabel();
-        JButton help22 = new JButton("Ask for Help (2)");
-        JLabel help2 = new JLabel();
+        help22 = new JButton("Ask for Help ("+this.player2HelpCount+")");
+        help22.addActionListener(this);
+        help2 = new JLabel();
 
         panelbuttombuttom.add(player2);
         panelbuttombuttom.add(player22);
@@ -217,12 +224,32 @@ public class DomineeringLoadedGameH extends JFrame implements ActionListener {
     @Override
     public void actionPerformed(ActionEvent e) {
         if (e.getSource() == btnSauvgarde){
-            domineeringGame.saveGameI(currentPosition,player,2,2);
+            domineeringGame.saveGameI(currentPosition,player,player1HelpCount,player2HelpCount);
             closeCurrentWindowAndOpenNewOne();
-        }else if (e.getSource() == btnRetour) {
+        }
+        if (e.getSource() == btnRetour) {
             System.out.println(btnRetour.getText());
             this.dispose();
             new DomineeringGUI();
+        }
+        if (e.getSource() == help11 && player==true) {
+            if (player1HelpCount!=0){
+                currentPosition = (DomineeringPosition) domineeringGame.getProgramMoveV(currentPosition);
+                updateUI(currentPosition);
+                player1HelpCount--;
+                help11.setText("Ask for Help ("+player1HelpCount+")");
+                player=false;
+            }
+
+        }
+        if (e.getSource() == help22 && player==false) {
+            if (player2HelpCount!=0){
+                currentPosition = (DomineeringPosition) domineeringGame.getProgramMoveH(currentPosition);
+                updateUI(currentPosition);
+                player2HelpCount--;
+                help22.setText("Ask for Help ("+player2HelpCount+")");
+                player=true;
+            }
         }
 
     }

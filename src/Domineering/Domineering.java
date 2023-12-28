@@ -6,8 +6,12 @@ import java.util.Vector;
 
 public class Domineering extends GameSearch{
 
+    int depth=1;
     public Domineering() {
 
+    }
+    public Domineering(int depth) {
+    this.depth=depth;
     }
 
     public boolean wonPosition(Position p, boolean player) {
@@ -206,7 +210,8 @@ public class Domineering extends GameSearch{
 
     public boolean reachedMaxDepth(Position p, int depth) {
         boolean ret = false;
-        if (depth >=1) {
+        System.out.println(this.depth);
+        if (depth >=this.depth) {
             return true;
         } else {
             if (this.wonPosition(p, false)) {
